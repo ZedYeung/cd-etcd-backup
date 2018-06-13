@@ -4,26 +4,28 @@ HOSTS=(
 )
 
 NOW=$(date +'%Y%m%d-%H%M%S')
-BACKUP_DIR=/etcd_backup/full/
+FULL_BACKUP_DIR=/etcd_backup/full/
+FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
+FULL_BACKUP=${HOST}-${NOW}.json
+BACKUP_ENDPOINT=/
 RETAIN=1
-CRT=
+CRT=""
+PUBLIC_KEY_PEM=public_key.pem
+USER=root
 
-for HOST in HOSTS;
-do
+mkdir -p ${FULL_BACKUP_DIR}
+
 # https://gist.github.com/crazybyte/4142975
-  BACKUP_FILE="${HOST}${NOW}.json"
-  mkdir -p ${BACKUP_DIR}
-  etcdtool --ca ${CRT} --peers ${HOST} -u root export /registry -f 'JSON' -o ${BACKUP_DIR}/${BACKUP_FILE}
-  openssl smime -encrypt -binary -aes-256-cbc -in ${BACKUP_FILE} -out ${BACKUP_FILE}.enc -outform DER public_key.pem
-  # todo: upload to cloud storage
-  # remove the old one
-done
+etcdtool --ca ${CRT} --peers ${HOSTS} -u ${USER} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${FULL_BACKUP_DIR}/${FULL_BACKUP}
+openssl smime -encrypt -binary -aes-256-cbc -in ${FULL_BACKUP} -out ${FULL_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
+s3cmd put ${FULL_BACKUP}.enc ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/${FULL_BACKUP}.enc
 
-BACKUP_NUM=$(ls -l ${BACKUP_DIR} | wc -l)
+# REMOVE OUTDATED BACKUP
+FULL_BACKUP_NUM=$(ls -l ${FULL_BACKUP_DIR} | wc -l)
 
-if ( ${BACKUP_NUM} > ${RETAIN} )); then
-  for BACKUP in $(ls -tp ${BACKUP_DIR} | tail -n (${BACKUP_NUM} - ${RETAIN}) );
+if ( ${FULL_BACKUP_NUM} > ${RETAIN} )); then
+  for BACKUP in $(ls -tp ${FULL_BACKUP_DIR} | tail -n $(${FULL_BACKUP_NUM} - ${RETAIN}) );
     do
-      rm ${BACKUP_DIR}/${BACKUP}
+      rm ${FULL_BACKUP_DIR}/${BACKUP}
     done
 fi

@@ -4,25 +4,31 @@ HOSTS=(
 )
 
 NOW=$(date +'%Y%m%d-%H%M%S')
-BACKUP_DIR=/etcd_backup/diff/
+FULL_BACKUP_DIR=/etcd_backup/full/
+DIFF_BACKUP_DIR=/etcd_backup/diff/
+DIFF_BACKUP_OBJECT_STORAGE_BUCKET=s3://diff-backup
+LATEST_FULL_BACKUP=($( ls -tp ${FULL_BACKUP_DIR} | head -n 1))
+UPDATED_FULL_BACKUP=${HOST}-${NOW}.json
+DIFF_BACKUP=${HOST}-${NOW}.patch
+BACKUP_ENDPOINT=/
 RETAIN=14
-LATEST_BACKUP_FILE=($( ls -tp /etcd_backup/full/ | head -n 1))
+CRT=""
+PUBLIC_KEY_PEM=public_key.pem
+USER=root
 
-for HOST in HOSTS;
-do
-  UPDATED_FILE="${HOST}${NOW}.json"
-  BACKUP_FILE="${HOST}${NOW}.patch"
-  mkdir -p ${BACKUP_DIR}
-  etcdtool --ca ./etcdcert.crt --peers host -u root export /registry -f 'JSON' -o ${UPDATED_FILE}
-  openssl smime -encrypt -binary -aes-256-cbc -in ${BACKUP_FILE} -out ${BACKUP_FILE}.enc -outform DER public_key.pem
-  diff ${LATEST_BACKUP_FILE} ${UPDATED_FILE} > ${BACKUP_FILE}
-done
+mkdir -p ${DIFF_BACKUP_DIR}
 
-BACKUP_NUM=$(ls -l ${BACKUP_DIR} | wc -l)
+etcdtool --ca ${CRT} --peers ${HOSTS} -u ${USER} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${UPDATED_FULL_BACKUP}
+openssl smime -encrypt -binary -aes-256-cbc -in ${DIFF_BACKUP} -out ${DIFF_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
+diff ${LATEST_FULL_BACKUP} ${UPDATED_FULL_BACKUP} > ${DIFF_BACKUP}
+s3cmd put ${DIFF_BACKUP}.enc ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/${DIFF_BACKUP}.enc
 
-if ( ${BACKUP_NUM} > ${RETAIN} )); then
-  for BACKUP in $(ls -tp ${BACKUP_DIR} | tail -n (${BACKUP_NUM} - ${RETAIN}) );
+# REMOVE OUTDATED BACKUP
+DIFF_BACKUP_NUM=$(ls -l ${DIFF_BACKUP_DIR} | wc -l)
+
+if ( ${DIFF_BACKUP_NUM} > ${RETAIN} )); then
+  for BACKUP in $(ls -tp ${DIFF_BACKUP_DIR} | tail -n $(${DIFF_BACKUP_NUM} - ${RETAIN}) );
   do
-    rm ${BACKUP_DIR}/${BACKUP}
+    rm ${DIFF_BACKUP_DIR}/${BACKUP}
   done
 fi

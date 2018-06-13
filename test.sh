@@ -1,11 +1,21 @@
 #!/bin/bash
 # openssl encrypt large file
 # https://gist.github.com/crazybyte/4142975
+HOSTS=(
+
+)
+
 TEST_FULL_NUM=1
 TEST_DIFF_NUM=2
 FULL_INTERVAL=600
 DIFF_INTERVAL=120
 GENERATE_INTERVAL=60
+FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
+DIFF_BACKUP_OBJECT_STORAGE_BUCKET=s3://diff-backup
+BACKUP_ENDPOINT=/
+CRT=""
+USER=root
+PRIVATE_KEY_PEM=private_key.pem
 SLEEP_TIME=$(${TEST_FULL_NUM} * ${FULL_INTERVAL} + ${TEST_DIFF_NUM} * ${DIFF_INTERVAL})
 
 openssl req -x509 -days 100000 -newkey rsa:8912 -keyout private_key.pem -out public_key.pem
@@ -24,19 +34,23 @@ rm backup_cronjob
 sleep ${SLEEP_TIME}
 
 # simulate clash
-etcdctl rm / --recursive
+etcdctl rm ${BACKUP_ENDPOINT} --recursive
 # TODO VPN CONNECT
 
-LATEST_FULL_BACKUP=latest_full_backup.json
-LATEST_DIFF_BACKUP=latest_diff_backup.patch
+LATEST_FULL_ENC_BACKUP=$(s3cmd ls -tp ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
+LATEST_DIFF_ENC_BACKUP=$(s3cmd ls -tp ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
+LATEST_FULL_BACKUP=$(${LATEST_FULL_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
+LATEST_DIFF_BACKUP=$(${LATEST_DIFF_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
 
-# TODO: DOWNLOAD ENC BACKUP FROM CLOUD STORAGE
-openssl smime -decrypt -binary -in ${LATEST_FULL_BACKUP}.enc -inform DER -out ${LATEST_FULL_BACKUP} -inkey private_key.pem
-openssl smime -decrypt -binary -in ${LATEST_DIFF_BACKUP}.enc -inform DER -out ${LATEST_DIFF_BACKUP} -inkey private_key.pem
+s3cmd get ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/${LATEST_FULL_ENC_BACKUP} ${LATEST_FULL_ENC_BACKUP}
+s3cmd get ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/${LATEST_DIFF_ENC_BACKUP} ${LATEST_DIFF_ENC_BACKUP}
+
+openssl smime -decrypt -binary -in ${LATEST_FULL_ENC_BACKUP} -inform DER -out ${LATEST_FULL_BACKUP} -inkey ${PRIVATE_KEY_PEM}
+openssl smime -decrypt -binary -in ${LATEST_DIFF_ENC_BACKUP} -inform DER -out ${LATEST_DIFF_BACKUP} -inkey ${PRIVATE_KEY_PEM}
 
 # TEST FULL BACKUP
 # TODO: CA
-etcdtool --ca ./etcdcert.crt --peers host -u root import -y / ${LATEST_FULL_BACKUP}
+etcdtool --ca ${CRT} --peers ${HOSTS} -u ${USER} import -y ${BACKUP_ENDPOINT} ${LATEST_FULL_BACKUP}
 
 FULL_BACKUP_TEST_CASE_NUM=$( ${TEST_FULL_NUM} * ${FULL_INTERVAL} / ${GENERATE_INTERVAL} )
 assert $(etcdctl ls /test | wc -l) ${FULL_BACKUP_TEST_CASE_NUM}
@@ -50,10 +64,10 @@ done
 
 
 # TEST DIFF BACKUP
-UPDATED_BACKUP=updated_backup.json
-patch ${LATEST_FULL_BACKUP} -i ${LATEST_DIFF_BACKUP} -o ${UPDATED_BACKUP}
+UPDATED_FULL_BACKUP=updated_full_backup.json
+patch ${LATEST_FULL_BACKUP} -i ${LATEST_DIFF_BACKUP} -o ${UPDATED_FULL_BACKUP}
 
-etcdtool --ca ./etcdcert.crt --peers host -u root import -y / ${UPDATED_BACKUP}
+etcdtool --ca ${CRT} --peers ${HOSTS} -u ${USER} import -y ${BACKUP_ENDPOINT} ${UPDATED_FULL_BACKUP}
 
 DIFF_BACKUP_TEST_CASE_NUM=$(${SLEEP_TIME} / ${GENERATE_INTERVAL} )
 assert $(etcdctl ls /test | wc -l) ${DIFF_BACKUP_TEST_CASE_NUM}
