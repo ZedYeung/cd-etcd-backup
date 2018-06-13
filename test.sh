@@ -10,11 +10,13 @@ SLEEP_TIME=$(${TEST_FULL_NUM} * ${FULL_INTERVAL} + ${TEST_DIFF_NUM} * ${DIFF_INT
 
 openssl req -x509 -days 100000 -newkey rsa:8912 -keyout private_key.pem -out public_key.pem
 ./generate_random_data.sh &
+
 # CRON JOB TO BACKUP
 # https://stackoverflow.com/questions/878600/how-to-create-a-cron-job-using-bash-automatically-without-the-interactive-editor
 crontab -l > backup_cronjob
 echo "*/10 * * * * ./etcd-backup-full.sh" >> backup_cronjob
 echo "*/2 * * * * ./etcd-backup-diff.sh" >> backup_cronjob
+echo "* * * * * ./etcd_unhealth_alert.sh" >> backup_cronjob
 # echo "* * * * * ./generate_random_data.sh" >> backup_cronjob
 crontab backup_cronjob
 rm backup_cronjob
@@ -23,7 +25,7 @@ sleep ${SLEEP_TIME}
 
 # simulate clash
 etcdctl rm / --recursive
-# TODO SEND ALERT
+# TODO VPN CONNECT
 
 LATEST_FULL_BACKUP=latest_full_backup.json
 LATEST_DIFF_BACKUP=latest_diff_backup.patch
@@ -33,16 +35,18 @@ openssl smime -decrypt -binary -in ${LATEST_FULL_BACKUP}.enc -inform DER -out ${
 openssl smime -decrypt -binary -in ${LATEST_DIFF_BACKUP}.enc -inform DER -out ${LATEST_DIFF_BACKUP} -inkey private_key.pem
 
 # TEST FULL BACKUP
+# TODO: CA
 etcdtool --ca ./etcdcert.crt --peers host -u root import -y / ${LATEST_FULL_BACKUP}
 
 FULL_BACKUP_TEST_CASE_NUM=$( ${TEST_FULL_NUM} * ${FULL_INTERVAL} / ${GENERATE_INTERVAL} )
 assert $(etcdctl ls /test | wc -l) ${FULL_BACKUP_TEST_CASE_NUM}
 
 for i in $(seq 1 ${FULL_BACKUP_TEST_CASE_NUM});
-  do
-    # deployment=nginx${i}
-    # assert $(etcdctl get /registry/deployments/${deployment})
-    assert $(etcdctl get /test/case${i}) $(${i} * 2 - 1)
+do
+  # deployment=nginx${i}
+  # assert $(etcdctl get /registry/deployments/${deployment})
+  assert $(etcdctl get /test/case${i}) $(${i} * 2 - 1)
+done
 
 
 # TEST DIFF BACKUP
@@ -55,5 +59,6 @@ DIFF_BACKUP_TEST_CASE_NUM=$(${SLEEP_TIME} / ${GENERATE_INTERVAL} )
 assert $(etcdctl ls /test | wc -l) ${DIFF_BACKUP_TEST_CASE_NUM}
 
 for i in $(seq 1 ${DIFF_BACKUP_TEST_CASE_NUM});
-  do
-    assert $(etcdctl get /test/case${i}) $(${i} * 2 - 1)
+do
+  assert $(etcdctl get /test/case${i}) $(${i} * 2 - 1)
+done

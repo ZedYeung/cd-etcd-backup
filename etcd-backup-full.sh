@@ -21,8 +21,7 @@ done
 
 BACKUP_NUM=$(ls -l ${BACKUP_DIR} | wc -l)
 
-if ( ${BACKUP_NUM} > ${RETAIN} ));
-then
+if ( ${BACKUP_NUM} > ${RETAIN} )); then
   for BACKUP in $(ls -tp ${BACKUP_DIR} | tail -n (${BACKUP_NUM} - ${RETAIN}) );
     do
       rm ${BACKUP_DIR}/${BACKUP}
