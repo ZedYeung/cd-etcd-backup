@@ -23,5 +23,10 @@ Backup increment every half day
 Interrogate cluster machines every minute. Email one alert for each unhealthy machine.
 
 ## Test
-Generate one key value pair every minute. Simulate clash at some time point.
-Restore full backup and diff backup and check the consistency respectively.
+Generate one key value pair every minute with incremental index i.  
+Simulate clash at some time point by removing the root directory of etcd.  
+Restore full backup and diff backup and check the consistency respectively.  
+Assert etcd get key equal value and the total number of key value pair.
+
+## Test large backup
+TODO
