@@ -5,9 +5,7 @@
 
 ## Encryption
 [OPENSSL SMIME](https://gist.github.com/crazybyte/4142975)
-
-## VPN Connection
-TODO
+Store the private key in isolated disk
 
 ## Storage
 [Object Storage](https://www.ctl.io/object-storage/)
