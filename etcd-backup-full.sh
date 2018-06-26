@@ -1,9 +1,5 @@
 #!/bin/bash
-HOSTS=(
-  10.50.216.13,
-  10.73.146.15,
-  10.92.215.12
-)
+ENDPOINTS="http://10.50.216.13:4001,http://10.73.146.15:4001,http://10.92.215.12:4001"
 
 NOW=$(date +'%Y%m%d-%H%M%S')
 FULL_BACKUP_DIR=/etcd_backup/full/
@@ -18,7 +14,7 @@ USER=root
 mkdir -p ${FULL_BACKUP_DIR}
 
 # https://gist.github.com/crazybyte/4142975
-etcdtool --peers ${HOSTS} -u ${USER} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${FULL_BACKUP_DIR}/${FULL_BACKUP}
+etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${FULL_BACKUP_DIR}/${FULL_BACKUP}
 openssl smime -encrypt -binary -aes-256-cbc -in ${FULL_BACKUP} -out ${FULL_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
 s3cmd -c ${FULL_BACKUP_S3CFG} put ${FULL_BACKUP}.enc ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/${FULL_BACKUP}.enc
 

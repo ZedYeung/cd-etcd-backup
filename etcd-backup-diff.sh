@@ -1,9 +1,5 @@
 #!/bin/bash
-HOSTS=(
-  10.50.216.13,
-  10.73.146.15,
-  10.92.215.12
-)
+ENDPOINTS="http://10.50.216.13:4001,http://10.73.146.15:4001,http://10.92.215.12:4001"
 
 NOW=$(date +'%Y%m%d-%H%M%S')
 FULL_BACKUP_DIR=/etcd_backup/full/
@@ -20,7 +16,7 @@ USER=root
 
 mkdir -p ${DIFF_BACKUP_DIR}
 
-etcdtool --peers ${HOSTS} -u ${USER} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${UPDATED_FULL_BACKUP}
+etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${UPDATED_FULL_BACKUP}
 openssl smime -encrypt -binary -aes-256-cbc -in ${DIFF_BACKUP} -out ${DIFF_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
 diff ${LATEST_FULL_BACKUP} ${UPDATED_FULL_BACKUP} > ${DIFF_BACKUP}
 s3cmd -c ${DIFF_BACKUP_S3CFG} put ${DIFF_BACKUP}.enc ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/${DIFF_BACKUP}.enc

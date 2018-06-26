@@ -1,17 +1,9 @@
 #!/bin/bash
 # openssl encrypt large file
 # https://gist.github.com/crazybyte/4142975
-HOSTS=(
-  10.50.216.13,
-  10.73.146.15,
-  10.92.215.12
-)
+ENDPOINTS="http://10.50.216.13:4001,http://10.73.146.15:4001,http://10.92.215.12:4001"
 
-RESTORE_HOSTS=(
-  10.103.1.13,
-  10.103.1.14,
-  10.103.1.15
-)
+RESTORE_ENDPOINTS="http://10.103.1.13:4001,http://10.103.1.14:4001,http://10.103.1.15:4001"
 
 TEST_FULL_NUM=1
 TEST_DIFF_NUM=2
@@ -62,7 +54,7 @@ openssl smime -decrypt -binary -in ${LATEST_DIFF_ENC_BACKUP} -inform DER -out ${
 
 # TEST FULL BACKUP
 # TODO: CA
-etcdtool --peers ${RESTORE_HOSTS} -u ${USER} import -y ${BACKUP_ENDPOINT} ${LATEST_FULL_BACKUP}
+etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${LATEST_FULL_BACKUP}
 
 FULL_BACKUP_TEST_CASE_NUM=$( ${TEST_FULL_NUM} * ${FULL_INTERVAL} / ${GENERATE_INTERVAL} )
 assert $(etcdctl ls /test | wc -l) ${FULL_BACKUP_TEST_CASE_NUM}
@@ -79,7 +71,7 @@ done
 UPDATED_FULL_BACKUP=updated_full_backup.json
 patch ${LATEST_FULL_BACKUP} -i ${LATEST_DIFF_BACKUP} -o ${UPDATED_FULL_BACKUP}
 
-etcdtool --peers ${RESTORE_HOSTS} -u ${USER} import -y ${BACKUP_ENDPOINT} ${UPDATED_FULL_BACKUP}
+etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${UPDATED_FULL_BACKUP}
 
 DIFF_BACKUP_TEST_CASE_NUM=$(${SLEEP_TIME} / ${GENERATE_INTERVAL} )
 assert $(etcdctl ls /test | wc -l) ${DIFF_BACKUP_TEST_CASE_NUM}
