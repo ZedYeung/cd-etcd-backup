@@ -13,8 +13,10 @@ etcdtool --peers ${ENDPOINTS} tree /
 s3cmd -c ${FULL_BACKUP_S3CFG} ls s3://full-backup
 secmd -c ${DIFF_BACKUP_S3CFG} ls s3://diff-backup
 
-for ENDPOINT in ENDPOINTS;
+IFS=","
+
+for ENDPOINT in $ENDPOINTS;
 do
   HEALTH=$(curl -L ${ENDPOINT}/health)
-  curl -X POST -H 'Content-type: application/json' --data '{"text": "${ENDPOINT} ${HEALTH}"}' ${SLACK_APP}
+  curl -X POST -H 'Content-type: application/json' --data '{"text": ${ENDPOINT} ${HEALTH}}' ${SLACK_APP}
 done
