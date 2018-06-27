@@ -14,6 +14,8 @@ IFS=","
 
 for ENDPOINT in $ENDPOINTS;
 do
-  HEALTH=$(curl -L ${ENDPOINT}/health)
-  curl -X POST -H 'Content-type: application/json' --data '{"text": ${ENDPOINT} ${HEALTH}}' ${SLACK_APP}
+  HEALTH=$(curl -L ${ENDPOINT}/health | jq -r '.health')
+  echo $ENDPOINT
+  echo $HEALTH
+  curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${ENDPOINT} ${HEALTH}"'"}' ${SLACK_APP}
 done
