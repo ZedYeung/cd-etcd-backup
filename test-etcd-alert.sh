@@ -11,9 +11,8 @@ do
   if [ $HEALTH = false ]; then
     curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${ENDPOINT}"' unhealthy"}' ${SLACK_APP}
   elif [ $HEALTH = true ]; then
-    :
+    curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${ENDPOINT}"' healthy"}' ${SLACK_APP}
   else
     curl -X POST -H 'Content-type: application/json' --data '{"text": "Could not detect"}' ${SLACK_APP}
   fi
 done
-
