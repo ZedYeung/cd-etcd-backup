@@ -1,6 +1,6 @@
 #!/bin/bash
 # NOW=$(date +'%Y%m%d-%H%M%S')
-for i in $(seq 1 1000);
+for i in $(seq 1 100);
 do
   # deployment=nginx${i}
   # kubectl run ${deployment} --image=nginx:latest --replicas=1
