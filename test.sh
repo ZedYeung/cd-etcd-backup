@@ -21,7 +21,7 @@ FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
 DIFF_BACKUP_OBJECT_STORAGE_BUCKET=s3://diff-backup
 BACKUP_ENDPOINT=/
 PRIVATE_KEY_PEM=private_key.pem
-SLEEP_TIME=$(${TEST_FULL_NUM} * ${FULL_INTERVAL} + ${TEST_DIFF_NUM} * ${DIFF_INTERVAL})
+SLEEP_TIME=$[${TEST_FULL_NUM} * ${FULL_INTERVAL} + ${TEST_DIFF_NUM} * ${DIFF_INTERVAL}]
 
 echo "Generate ssl file..."
 openssl req -x509 -days 100000 -newkey rsa:8912 -keyout private_key.pem -out public_key.pem
