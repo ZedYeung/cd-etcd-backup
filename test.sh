@@ -1,9 +1,16 @@
 #!/bin/bash
 # openssl encrypt large file
 # https://gist.github.com/crazybyte/4142975
-ENDPOINTS="http://10.50.216.13:4001,http://10.73.146.15:4001,http://10.92.215.12:4001"
+RESTORE_HOST0=10.103.1.13
+RESTORE_HOST1=10.103.1.14
+RESTORE_HOST2=10.103.1.15
+HOST0=10.103.1.16
+HOST1=10.103.1.17
+HOST2=10.103.1.18
+PORT=2379
 
-RESTORE_ENDPOINTS="http://10.103.1.13:4001,http://10.103.1.14:4001,http://10.103.1.15:4001"
+export RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
+export ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
 
 TEST_FULL_NUM=1
 TEST_DIFF_NUM=2
@@ -38,8 +45,8 @@ sleep ${SLEEP_TIME}
 # etcdctl rm ${BACKUP_ENDPOINT} --recursive
 # TODO VPN CONNECT
 echo "Restore..."
-LATEST_FULL_ENC_BACKUP=$(s3cmd ls -tp ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
-LATEST_DIFF_ENC_BACKUP=$(s3cmd ls -tp ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
+LATEST_FULL_ENC_BACKUP=$(s3cmd ls ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
+LATEST_DIFF_ENC_BACKUP=$(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
 LATEST_FULL_BACKUP=$(${LATEST_FULL_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
 LATEST_DIFF_BACKUP=$(${LATEST_DIFF_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
 

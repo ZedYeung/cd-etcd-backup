@@ -1,6 +1,4 @@
 #!/bin/bash
-ENDPOINTS="http://10.50.216.13:4001,http://10.73.146.15:4001,http://10.92.215.12:4001"
-
 NOW=$(date +'%Y%m%d-%H%M%S')
 FULL_BACKUP_DIR=/etcd_backup/full/
 DIFF_BACKUP_DIR=/etcd_backup/diff/
