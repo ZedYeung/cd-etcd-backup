@@ -16,7 +16,7 @@ s3cmd put ${FULL_BACKUP_DIR}/${FULL_BACKUP}.enc ${FULL_BACKUP_OBJECT_STORAGE_BUC
 # REMOVE OUTDATED BACKUP
 FULL_BACKUP_NUM=$(ls -l ${FULL_BACKUP_DIR} | wc -l)
 
-if ( ${FULL_BACKUP_NUM} > ${RETAIN} )); then
+if [ "${FULL_BACKUP_NUM}" > "${RETAIN}" ]; then
   echo "Remove outdated backup"
   for BACKUP in $(ls -tp ${FULL_BACKUP_DIR} | tail -n $(${FULL_BACKUP_NUM} - ${RETAIN}) );
     do

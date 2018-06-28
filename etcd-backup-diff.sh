@@ -20,9 +20,9 @@ rm ${UPDATED_FULL_BACKUP}
 # REMOVE OUTDATED BACKUP
 DIFF_BACKUP_NUM=$(ls -l ${DIFF_BACKUP_DIR} | wc -l)
 
-if ( ${DIFF_BACKUP_NUM} > ${RETAIN} )); then
+if [ "${DIFF_BACKUP_NUM}" > "${RETAIN}"]; then
   echo "Remove outdated backup"
-  for BACKUP in $(ls -tp ${DIFF_BACKUP_DIR} | tail -n $(${DIFF_BACKUP_NUM} - ${RETAIN}) );
+  for BACKUP in $(ls -tp ${DIFF_BACKUP_DIR} | tail -n $(${DIFF_BACKUP_NUM} - ${RETAIN}));
   do
     rm ${DIFF_BACKUP_DIR}/${BACKUP}
   done
