@@ -11,12 +11,12 @@ PORT=2379
 
 export RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
 export ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
-export GENERATE_INTERVAL=5
+export GENERATE_INTERVAL=10
 
 TEST_FULL_NUM=2
-TEST_DIFF_NUM=3
-FULL_INTERVAL=100
-DIFF_INTERVAL=20
+TEST_DIFF_NUM=2
+FULL_INTERVAL=180
+DIFF_INTERVAL=60
 
 FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
 DIFF_BACKUP_OBJECT_STORAGE_BUCKET=s3://diff-backup
@@ -34,8 +34,8 @@ echo "Generate data..."
 # https://stackoverflow.com/questions/878600/how-to-create-a-cron-job-using-bash-automatically-without-the-interactive-editor
 echo "Create cronjob..."
 crontab -l > backup_cronjob
-echo "*/10 * * * * ./etcd-backup-full.sh" >> backup_cronjob
-echo "*/2 * * * * ./etcd-backup-diff.sh" >> backup_cronjob
+echo "*/3 * * * * ./etcd-backup-full.sh" >> backup_cronjob
+echo "*/1 * * * * ./etcd-backup-diff.sh" >> backup_cronjob
 echo "* * * * * ./etcd_unhealth_alert.sh" >> backup_cronjob
 # echo "* * * * * ./generate_random_data.sh" >> backup_cronjob
 crontab backup_cronjob
