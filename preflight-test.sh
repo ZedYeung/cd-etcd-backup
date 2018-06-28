@@ -14,17 +14,21 @@ ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${POR
 cp ./.s3cfg ~/.s3cfg
 
 # http:// is mandatory
+echo "Check etcd cluster health"
 etcdctl --endpoints ${ENDPOINTS} cluster-health
 etcdctl --endpoints ${RESTORE_ENDPOINTS} cluster-health
 
+echo "Check etcdtool"
 etcdtool --peers ${ENDPOINTS} tree /
 etcdtool --peers ${RESTORE_ENDPOINTS} tree /
 
+echo "Check s3cmd"
 s3cmd ls s3://full-backup
 s3cmd ls s3://diff-backup
 
 IFS=","
 
+echo "Check Slack webhook"
 for ENDPOINT in $ENDPOINTS;
 do
   HEALTH=$(curl -L ${ENDPOINT}/health | jq -r '.health')
