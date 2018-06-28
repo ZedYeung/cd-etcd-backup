@@ -21,7 +21,7 @@ etcdtool --peers ${ENDPOINTS} tree /
 etcdtool --peers ${RESTORE_ENDPOINTS} tree /
 
 s3cmd ls s3://full-backup
-secmd ls s3://diff-backup
+s3cmd ls s3://diff-backup
 
 IFS=","
 
