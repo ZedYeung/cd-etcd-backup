@@ -8,12 +8,11 @@ IFS=","
 for ENDPOINT in $ENDPOINTS;
 do
   HEALTH=$(curl -L ${ENDPOINT}/health | jq -r '.health')
-  if [ $HEALTH = false ]; then
+  if [ "$HEALTH" = false ]; then
     curl -X POST -H 'Content-type: application/json' --data '{"text": "'"${ENDPOINT}"' unhealthy"}' ${SLACK_APP}
-  elif [ $HEALTH = true ]; then
+  elif [ "$HEALTH" = true ]; then
     :
   else
     curl -X POST -H 'Content-type: application/json' --data '{"text": "Could not detect"}' ${SLACK_APP}
   fi
 done
-
