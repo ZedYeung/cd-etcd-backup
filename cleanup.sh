@@ -13,7 +13,7 @@ ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${POR
 crontab -r
 
 etcdctl --endpoints ${ENDPOINTS} rm -r /test
-etcdctl --endpoints ${RESTORE_ENDPOINTS} rm -r /tesst
+etcdctl --endpoints ${RESTORE_ENDPOINTS} rm -r /test
 
 s3cmd rm s3://full-backup/*
 s3cmd rm s3://diff-backup/*
