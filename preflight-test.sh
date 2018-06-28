@@ -11,6 +11,11 @@ PORT=2379
 RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
 ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
 
+FULL_BACKUP_DIR=/etcd_backup/full/
+DIFF_BACKUP_DIR=/etcd_backup/diff/
+mkdir -p ${FULL_BACKUP_DIR}
+mkdir -p ${DIFF_BACKUP_DIR}
+
 cp ./.s3cfg ~/.s3cfg
 
 # http:// is mandatory
