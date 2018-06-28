@@ -33,6 +33,7 @@ echo "Generate data..."
 
 echo "First backup"
 ./etcd-backup-full.sh
+./etcd-backup-diff.sh
 
 # CRON JOB TO BACKUP
 # https://stackoverflow.com/questions/878600/how-to-create-a-cron-job-using-bash-automatically-without-the-interactive-editor
