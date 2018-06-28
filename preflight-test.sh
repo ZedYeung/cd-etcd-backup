@@ -14,6 +14,9 @@ ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${POR
 cp ./.s3cfg ~/.s3cfg
 
 # http:// is mandatory
+etcdctl --endpoints ${ENDPOINTS} cluster-health
+etcdctl --endpoints ${RESTORE_ENDPOINTS} cluster-health
+
 etcdtool --peers ${ENDPOINTS} tree /
 etcdtool --peers ${RESTORE_ENDPOINTS} tree /
 

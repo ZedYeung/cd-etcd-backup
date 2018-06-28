@@ -67,7 +67,7 @@ for i in $(seq 1 ${FULL_BACKUP_TEST_CASE_NUM});
 do
   # deployment=nginx${i}
   # assert $(etcdctl get /registry/deployments/${deployment})
-  assert $(etcdctl get /test/case${i}) $(${i} * 2 - 1)
+  assert $(etcdctl get /test/case${i}) $[${i} * 2 - 1]
 done
 
 
@@ -82,5 +82,5 @@ assert $(etcdctl ls /test | wc -l) ${DIFF_BACKUP_TEST_CASE_NUM}
 
 for i in $(seq 1 ${DIFF_BACKUP_TEST_CASE_NUM});
 do
-  assert $(etcdctl get /test/case${i}) $(${i} * 2 - 1)
+  assert $(etcdctl get /test/case${i}) $[${i} * 2 - 1]
 done
