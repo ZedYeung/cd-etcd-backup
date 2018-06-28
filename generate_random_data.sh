@@ -1,7 +1,5 @@
 #!/bin/bash
 # NOW=$(date +'%Y%m%d-%H%M%S')
-GENERATE_INTERVAL=60
-
 for i in $(seq 1 1000);
 do
   # deployment=nginx${i}

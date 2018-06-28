@@ -11,12 +11,13 @@ PORT=2379
 
 export RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
 export ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
+export GENERATE_INTERVAL=10
 
 TEST_FULL_NUM=1
 TEST_DIFF_NUM=2
-FULL_INTERVAL=600
-DIFF_INTERVAL=120
-GENERATE_INTERVAL=60
+FULL_INTERVAL=300
+DIFF_INTERVAL=30
+
 FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
 DIFF_BACKUP_OBJECT_STORAGE_BUCKET=s3://diff-backup
 BACKUP_ENDPOINT=/
@@ -25,6 +26,8 @@ SLEEP_TIME=$[${TEST_FULL_NUM} * ${FULL_INTERVAL} + ${TEST_DIFF_NUM} * ${DIFF_INT
 
 echo "Generate ssl file..."
 openssl req -x509 -days 100000 -newkey rsa:8912 -keyout private_key.pem -out public_key.pem
+
+echo "Generate data..."
 ./generate_random_data.sh &
 
 # CRON JOB TO BACKUP

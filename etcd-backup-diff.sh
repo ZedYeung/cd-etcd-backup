@@ -12,6 +12,7 @@ PUBLIC_KEY_PEM=public_key.pem
 
 mkdir -p ${DIFF_BACKUP_DIR}
 
+echo "Backup ${DIFF_BACKUP}"
 etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${UPDATED_FULL_BACKUP}
 openssl smime -encrypt -binary -aes-256-cbc -in ${DIFF_BACKUP} -out ${DIFF_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
 diff ${LATEST_FULL_BACKUP} ${UPDATED_FULL_BACKUP} > ${DIFF_BACKUP}
