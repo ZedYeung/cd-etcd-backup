@@ -9,6 +9,7 @@ HOST1=10.103.1.17
 HOST2=10.103.1.18
 PORT=2379
 
+export SLACK_APP="https://hooks.slack.com/services/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"
 export RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
 export ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
 export GENERATE_INTERVAL=10
@@ -53,10 +54,14 @@ sleep ${SLEEP_TIME}
 # etcdctl rm ${BACKUP_ENDPOINT} --recursive
 # TODO VPN CONNECT
 echo "Restore..."
-LATEST_FULL_ENC_BACKUP=$(s3cmd ls ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
-LATEST_DIFF_ENC_BACKUP=$(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1)
+# s3cmd output sample
+# 2018-06-28 22:47      3576   s3://full-backup/test.sh
+LATEST_FULL_ENC_BACKUP=$(s3cmd ls ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1 | awk {'print $4'})
+LATEST_DIFF_ENC_BACKUP=$(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1 | awk {'print $4'})
 LATEST_FULL_BACKUP=$(${LATEST_FULL_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
+echo ${LATEST_FULL_BACKUP}
 LATEST_DIFF_BACKUP=$(${LATEST_DIFF_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
+echo ${LATEST_DIFF_BACKUP}
 
 echo "Pulling ${LATEST_FULL_ENC_BACKUP}"
 s3cmd get ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/${LATEST_FULL_ENC_BACKUP} ${LATEST_FULL_ENC_BACKUP}
@@ -72,14 +77,20 @@ openssl smime -decrypt -binary -in ${LATEST_DIFF_ENC_BACKUP} -inform DER -out ${
 echo "Recovering..."
 etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${LATEST_FULL_BACKUP}
 
-FULL_BACKUP_TEST_CASE_NUM=$( ${TEST_FULL_NUM} * ${FULL_INTERVAL} / ${GENERATE_INTERVAL} )
-assert $(etcdctl ls /test | wc -l) ${FULL_BACKUP_TEST_CASE_NUM}
+FULL_BACKUP_TEST_CASE_NUM=$[${TEST_FULL_NUM} * ${FULL_INTERVAL} / ${GENERATE_INTERVAL}]
+RESTORE_FULL_BACKUP_NUM=$(etcdctl --endpoints ${RESTORE_ENDPOINTS} ls /test | wc -l)
+if  [${RESTORE_FULL_BACKUP_NUM} -ne ${FULL_BACKUP_TEST_CASE_NUM}]; then
+  echo "Full backup test case number: ${FULL_BACKUP_TEST_CASE_NUM}"
+  echo "Restore full backup number: ${RESTORE_FULL_BACKUP_NUM}"
+fi
 
 for i in $(seq 1 ${FULL_BACKUP_TEST_CASE_NUM});
 do
   # deployment=nginx${i}
   # assert $(etcdctl get /registry/deployments/${deployment})
-  assert $(etcdctl get /test/case${i}) $[${i} * 2 - 1]
+  if [$(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1]]; then
+    echo "mismatch"
+  fi
 done
 
 
@@ -89,10 +100,16 @@ patch ${LATEST_FULL_BACKUP} -i ${LATEST_DIFF_BACKUP} -o ${UPDATED_FULL_BACKUP}
 
 etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${UPDATED_FULL_BACKUP}
 
-DIFF_BACKUP_TEST_CASE_NUM=$(${SLEEP_TIME} / ${GENERATE_INTERVAL} )
-assert $(etcdctl ls /test | wc -l) ${DIFF_BACKUP_TEST_CASE_NUM}
+DIFF_BACKUP_TEST_CASE_NUM=$[${SLEEP_TIME} / ${GENERATE_INTERVAL}]
+RESTORE_DIFF_BACKUP_NUM=$(etcdctl --endpoints ${RESTORE_ENDPOINTS} ls /test | wc -l)
+if  [${RESTORE_DIFF_BACKUP_NUM} -ne ${DIFF_BACKUP_TEST_CASE_NUM}]; then
+  echo "Diff backup test case number: ${DIFF_BACKUP_TEST_CASE_NUM}"
+  echo "Restore diff backup number: ${RESTORE_DIFF_BACKUP_NUM}"
+fi
 
 for i in $(seq 1 ${DIFF_BACKUP_TEST_CASE_NUM});
 do
-  assert $(etcdctl get /test/case${i}) $[${i} * 2 - 1]
+  if [$(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1]]; then
+    echo "mismatch"
+  fi
 done

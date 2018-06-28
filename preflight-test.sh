@@ -11,6 +11,9 @@ PORT=2379
 RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
 ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
 
+FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
+DIFF_BACKUP_OBJECT_STORAGE_BUCKET=s3://diff-backup
+
 FULL_BACKUP_DIR=/etcd_backup/full/
 DIFF_BACKUP_DIR=/etcd_backup/diff/
 mkdir -p ${FULL_BACKUP_DIR}
@@ -28,8 +31,12 @@ etcdtool --peers ${ENDPOINTS} tree /
 etcdtool --peers ${RESTORE_ENDPOINTS} tree /
 
 echo "Check s3cmd"
-s3cmd ls s3://full-backup
-s3cmd ls s3://diff-backup
+s3cmd put test.sh ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/test.sh
+s3cmd put test.sh ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/test.sh
+s3cmd ls ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}
+s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}
+s3cmd rm ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/*
+s3cmd rm ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/*
 
 IFS=","
 
