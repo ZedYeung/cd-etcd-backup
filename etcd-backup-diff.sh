@@ -18,9 +18,12 @@ s3cmd put ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}.enc ${DIFF_BACKUP_OBJECT_STORAGE_BUC
 rm ${UPDATED_FULL_BACKUP}
 
 # REMOVE OUTDATED BACKUP
-DIFF_BACKUP_NUM=$(ls -l ${DIFF_BACKUP_DIR} | wc -l)
+# ls -l | wc -l
+# would have this extra line even in empty folder
+# total 0
+DIFF_BACKUP_NUM=$[$(ls -l ${DIFF_BACKUP_DIR} | wc -l) - 1]
 
-if [ "${DIFF_BACKUP_NUM}" > "${RETAIN}"]; then
+if [ "${DIFF_BACKUP_NUM}" > "${RETAIN}" ]; then
   echo "Remove outdated backup"
   for BACKUP in $(ls -tp ${DIFF_BACKUP_DIR} | tail -n $[${DIFF_BACKUP_NUM} - ${RETAIN}]);
   do
