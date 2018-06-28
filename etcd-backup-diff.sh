@@ -7,7 +7,7 @@ LATEST_FULL_BACKUP=($( ls -tp ${FULL_BACKUP_DIR} | head -n 1))
 UPDATED_FULL_BACKUP=${NOW}.json
 DIFF_BACKUP=${NOW}.patch
 BACKUP_ENDPOINT=/
-RETAIN=14
+RETAIN=5
 PUBLIC_KEY_PEM=public_key.pem
 
 mkdir -p ${DIFF_BACKUP_DIR}
@@ -22,6 +22,7 @@ s3cmd put ${DIFF_BACKUP}.enc ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/${DIFF_BACKUP}
 DIFF_BACKUP_NUM=$(ls -l ${DIFF_BACKUP_DIR} | wc -l)
 
 if ( ${DIFF_BACKUP_NUM} > ${RETAIN} )); then
+  echo "Remove outdated backup"
   for BACKUP in $(ls -tp ${DIFF_BACKUP_DIR} | tail -n $(${DIFF_BACKUP_NUM} - ${RETAIN}) );
   do
     rm ${DIFF_BACKUP_DIR}/${BACKUP}
