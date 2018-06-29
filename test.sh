@@ -57,8 +57,8 @@ sleep ${SLEEP_TIME}
 echo "Restore..."
 # s3cmd output sample
 # 2018-06-28 22:47      3576   s3://full-backup/test.sh
-LATEST_FULL_ENC_BACKUP=$(basename $(s3cmd ls ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1 | awk {'print $4'}))
-LATEST_DIFF_ENC_BACKUP=$(basename $(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | head -n 1 | awk {'print $4'}))
+LATEST_FULL_ENC_BACKUP=$(basename $(s3cmd ls ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | tail -n 1 | awk {'print $4'}))
+LATEST_DIFF_ENC_BACKUP=$(basename $(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | tail -n 1 | awk {'print $4'}))
 # LATEST_FULL_BACKUP=$(${LATEST_FULL_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
 LATEST_FULL_BACKUP=$(basename ${LATEST_FULL_ENC_BACKUP} .enc)
 echo ${LATEST_FULL_BACKUP}
