@@ -58,7 +58,7 @@ LATEST_DIFF_ENC_BACKUP=$(basename $(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET
 LATEST_FULL_BACKUP=$(basename ${LATEST_FULL_ENC_BACKUP} .enc)
 echo ${LATEST_FULL_BACKUP}
 # LATEST_DIFF_BACKUP=$(${LATEST_DIFF_ENC_BACKUP} | rev | cut -f 2- -d '.' | rev)
-LATEST_DIFF_BACKUP=$(basename ${LATEST_DIFF_BACKUP} .enc)
+LATEST_DIFF_BACKUP=$(basename ${LATEST_DIFF_ENC_BACKUP} .enc)
 echo ${LATEST_DIFF_BACKUP}
 
 echo "Pulling ${LATEST_FULL_ENC_BACKUP}"
@@ -86,7 +86,7 @@ for i in $(seq 1 ${FULL_BACKUP_TEST_CASE_NUM});
 do
   # deployment=nginx${i}
   # assert $(etcdctl get /registry/deployments/${deployment})
-  if [ $(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1] ]; then
+  if [ "$(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i})" -ne $[${i} * 2 - 1] ]; then
     echo "mismatch"
   fi
 done
@@ -107,7 +107,7 @@ fi
 
 for i in $(seq 1 ${DIFF_BACKUP_TEST_CASE_NUM});
 do
-  if [ $(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1] ]; then
+  if [ "$(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i})" -ne $[${i} * 2 - 1] ]; then
     echo "mismatch"
   fi
 done
