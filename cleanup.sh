@@ -25,5 +25,5 @@ rm etcd-backup-full.out
 rm etcd-backup-full.err
 rm etcd-backup-diff.out
 rm etcd-backup-diff.err
-etcd-unhealth-alert.out
+rm etcd-unhealth-alert.out
 rm etcd-unhealth-alert.err
