@@ -40,6 +40,7 @@ echo "First backup"
 # https://stackoverflow.com/questions/878600/how-to-create-a-cron-job-using-bash-automatically-without-the-interactive-editor
 echo "Create cronjob..."
 crontab -l > backup_cronjob
+echo "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 echo "*/3 * * * * ~/cd-etcd-backup/etcd-backup-full.sh" >> backup_cronjob
 echo "* * * * * ~/cd-etcd-backup/etcd-backup-diff.sh" >> backup_cronjob
 echo "* * * * * ~/cd-etcd-backup/etcd_unhealth_alert.sh" >> backup_cronjob
