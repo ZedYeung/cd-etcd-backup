@@ -8,8 +8,9 @@ UPDATED_FULL_BACKUP=${NOW}.json
 DIFF_BACKUP=${NOW}.patch
 BACKUP_ENDPOINT=/
 RETAIN=3
-PUBLIC_KEY_PEM=~/cd-etcd-backup/public_key.pem
+PUBLIC_KEY_PEM=~public_key.pem
 
+echo "BACKUP ${DIFF_BACKUP}"
 curl -X POST -H 'Content-type: application/json' --data '{"text": "Backup '"${DIFF_BACKUP}"' "}' ${SLACK_APP}
 etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${UPDATED_FULL_BACKUP}
 diff ${FULL_BACKUP_DIR}/${LATEST_FULL_BACKUP} ${UPDATED_FULL_BACKUP} > ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}
