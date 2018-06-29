@@ -80,7 +80,7 @@ etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${LATEST_FULL
 
 FULL_BACKUP_TEST_CASE_NUM=$[${TEST_FULL_NUM} * ${FULL_INTERVAL} / ${GENERATE_INTERVAL}]
 RESTORE_FULL_BACKUP_NUM=$(etcdctl --endpoints ${RESTORE_ENDPOINTS} ls /test | wc -l)
-if  [${RESTORE_FULL_BACKUP_NUM} -ne ${FULL_BACKUP_TEST_CASE_NUM}]; then
+if  [ ${RESTORE_FULL_BACKUP_NUM} -ne ${FULL_BACKUP_TEST_CASE_NUM} ]; then
   echo "Full backup test case number: ${FULL_BACKUP_TEST_CASE_NUM}"
   echo "Restore full backup number: ${RESTORE_FULL_BACKUP_NUM}"
 fi
@@ -89,7 +89,7 @@ for i in $(seq 1 ${FULL_BACKUP_TEST_CASE_NUM});
 do
   # deployment=nginx${i}
   # assert $(etcdctl get /registry/deployments/${deployment})
-  if [$(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1]]; then
+  if [ $(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1] ]; then
     echo "mismatch"
   fi
 done
@@ -103,14 +103,14 @@ etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${UPDATED_FUL
 
 DIFF_BACKUP_TEST_CASE_NUM=$[${SLEEP_TIME} / ${GENERATE_INTERVAL}]
 RESTORE_DIFF_BACKUP_NUM=$(etcdctl --endpoints ${RESTORE_ENDPOINTS} ls /test | wc -l)
-if  [${RESTORE_DIFF_BACKUP_NUM} -ne ${DIFF_BACKUP_TEST_CASE_NUM}]; then
+if  [ ${RESTORE_DIFF_BACKUP_NUM} -ne ${DIFF_BACKUP_TEST_CASE_NUM} ]; then
   echo "Diff backup test case number: ${DIFF_BACKUP_TEST_CASE_NUM}"
   echo "Restore diff backup number: ${RESTORE_DIFF_BACKUP_NUM}"
 fi
 
 for i in $(seq 1 ${DIFF_BACKUP_TEST_CASE_NUM});
 do
-  if [$(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1]]; then
+  if [ $(etcdctl --endpoints ${RESTORE_ENDPOINTS} get /test/case${i}) -ne $[${i} * 2 - 1] ]; then
     echo "mismatch"
   fi
 done

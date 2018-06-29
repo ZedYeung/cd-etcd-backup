@@ -19,7 +19,7 @@ s3cmd put ${FULL_BACKUP_DIR}/${FULL_BACKUP}.enc ${FULL_BACKUP_OBJECT_STORAGE_BUC
 # total 0
 FULL_BACKUP_NUM=$[$(ls -l ${FULL_BACKUP_DIR} | wc -l) - 1]
 
-if [ "${FULL_BACKUP_NUM}" > "${RETAIN}" ]; then
+if [ "${FULL_BACKUP_NUM}" -gt "${RETAIN}" ]; then
   curl -X POST -H 'Content-type: application/json' --data '{"text": "FULL_BACKUP_NUM: '"${FULL_BACKUP_NUM}"' "}' ${SLACK_APP}
   for BACKUP in $(ls -tp ${FULL_BACKUP_DIR} | tail -n $[${FULL_BACKUP_NUM} - ${RETAIN}]);
     do

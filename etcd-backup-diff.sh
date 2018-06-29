@@ -23,7 +23,7 @@ rm ${UPDATED_FULL_BACKUP}
 # total 0
 DIFF_BACKUP_NUM=$[$(ls -l ${DIFF_BACKUP_DIR} | wc -l) - 1]
 
-if [ "${DIFF_BACKUP_NUM}" > "${RETAIN}" ]; then
+if [ "${DIFF_BACKUP_NUM}" -gt "${RETAIN}" ]; then
   curl -X POST -H 'Content-type: application/json' --data '{"text": "DIFF_BACKUP_NUM: '"${DIFF_BACKUP_NUM}"' "}' ${SLACK_APP}
   for BACKUP in $(ls -tp ${DIFF_BACKUP_DIR} | tail -n $[${DIFF_BACKUP_NUM} - ${RETAIN}]);
   do
