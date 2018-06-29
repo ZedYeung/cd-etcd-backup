@@ -11,6 +11,8 @@ PUBLIC_KEY_PEM=public_key.pem
 curl -X POST -H 'Content-type: application/json' --data '{"text": "Backup '"${FULL_BACKUP}"' "}' ${SLACK_APP}
 etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${FULL_BACKUP_DIR}/${FULL_BACKUP}
 openssl smime -encrypt -binary -aes-256-cbc -in ${FULL_BACKUP_DIR}/${FULL_BACKUP} -out ${FULL_BACKUP_DIR}/${FULL_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
+# remove original backup once encrypt
+rm ${FULL_BACKUP_DIR}/${FULL_BACKUP}
 s3cmd put ${FULL_BACKUP_DIR}/${FULL_BACKUP}.enc ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/${FULL_BACKUP}.enc
 
 # REMOVE OUTDATED BACKUP

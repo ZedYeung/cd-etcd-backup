@@ -14,6 +14,8 @@ curl -X POST -H 'Content-type: application/json' --data '{"text": "Backup '"${DI
 etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${UPDATED_FULL_BACKUP}
 diff ${FULL_BACKUP_DIR}/${LATEST_FULL_BACKUP} ${UPDATED_FULL_BACKUP} > ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}
 openssl smime -encrypt -binary -aes-256-cbc -in ${DIFF_BACKUP_DIR}/${DIFF_BACKUP} -out ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
+# remove original backup once encrypt
+rm ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}
 s3cmd put ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}.enc ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/${DIFF_BACKUP}.enc
 rm ${UPDATED_FULL_BACKUP}
 
