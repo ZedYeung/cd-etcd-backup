@@ -1,10 +1,8 @@
-SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin:/root/go/bin:/usr/local/go/bin
-PWD=~/cd-etcd-backup
-USER=root
 
-*/3 * * * * ./etcd-backup-full.sh
+*/3 * * * * cd ~/cd-etcd-backup && ./etcd-backup-full.sh > etcd-backup-full.log 2>&1
 
-* * * * * ./etcd-backup-diff.sh
+* * * * * cd ~/cd-etcd-backup && ./etcd-backup-diff.sh > etcd-backup-diff.log 2>&1
 
-* * * * * ./etcd_unhealth_alert.sh
+* * * * * cd ~/cd-etcd-backup && ./etcd_unhealth_alert.sh > etcd-unhealth-alert.log 2>&1
+

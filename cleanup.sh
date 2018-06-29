@@ -10,6 +10,7 @@ PORT=2379
 RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
 ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
 
+kill $(pgrep 'generate_random')
 crontab -r
 
 etcdctl --endpoints ${ENDPOINTS} rm -r /test
@@ -21,9 +22,6 @@ s3cmd rm s3://diff-backup/*
 rm -r /etcd_backup/full/
 rm -r /etcd_backup/diff/
 
-rm etcd-backup-full.out
-rm etcd-backup-full.err
-rm etcd-backup-diff.out
-rm etcd-backup-diff.err
-rm etcd-unhealth-alert.out
-rm etcd-unhealth-alert.err
+rm etcd-backup-full.log
+rm etcd-backup-diff.log
+rm etcd-unhealth-alert.log
