@@ -20,3 +20,10 @@ s3cmd rm s3://diff-backup/*
 
 rm -r /etcd_backup/full/
 rm -r /etcd_backup/diff/
+
+rm etcd-backup-full.out
+rm etcd-backup-full.err
+rm etcd-backup-diff.out
+rm etcd-backup-diff.err
+etcd-unhealth-alert.out
+rm etcd-unhealth-alert.err
