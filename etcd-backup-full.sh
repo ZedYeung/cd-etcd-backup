@@ -5,7 +5,7 @@ FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
 FULL_BACKUP=${NOW}.json
 BACKUP_ENDPOINT=/
 RETAIN=1
-PUBLIC_KEY_PEM=public_key.pem
+PUBLIC_KEY_PEM=~/cd-etcd-backup/public_key.pem
 
 # https://gist.github.com/crazybyte/4142975
 curl -X POST -H 'Content-type: application/json' --data '{"text": "Backup '"${FULL_BACKUP}"' "}' ${SLACK_APP}
