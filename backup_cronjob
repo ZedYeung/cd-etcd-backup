@@ -1,0 +1,10 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin:/root/go/bin:/usr/local/go/bin
+PWD=~/cd-etcd-backup
+USER=root
+
+*/3 * * * * ./etcd-backup-full.sh 1>etcd-backup-full.out 2>etcd-backup-full.err
+
+* * * * * ./etcd-backup-diff.sh 1>etcd-backup-diff.out 2>etcd-backup-diff.err
+
+* * * * * ./etcd_unhealth_alert.sh 1>etcd-unhealth-alert.out 2>etcd-unhealth-alert.err

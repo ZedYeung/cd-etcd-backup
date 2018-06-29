@@ -39,14 +39,6 @@ echo "First backup"
 # CRON JOB TO BACKUP
 # https://stackoverflow.com/questions/878600/how-to-create-a-cron-job-using-bash-automatically-without-the-interactive-editor
 echo "Create cronjob..."
-crontab -l > backup_cronjob
-echo "SHELL=/bin/bash" >> backup_cronjob
-echo "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" >> backup_cronjob
-echo "*/3 * * * * cd ~/cd-etcd-backup && ./etcd-backup-full.sh" >> backup_cronjob 1>etcd-backup-full.out 2>etcd-backup-full.err
-echo "* * * * * cd ~/cd-etcd-backup && ./etcd-backup-diff.sh" >> backup_cronjob 1>etcd-backup-diff.out 2>etcd-backup-diff.err
-echo "* * * * * cd ~/cd-etcd-backup && ./etcd_unhealth_alert.sh" >> backup_cronjob 1>etcd-unhealth-alert.out 2>etcd-unhealth-alert.err
-echo -en "\n" >> backup_cronjob
-
 # echo "* * * * * ./generate_random_data.sh" >> backup_cronjob
 crontab backup_cronjob
 # rm backup_cronjob
