@@ -1,4 +1,7 @@
 #!/bin/bash
+mkdir -p /etcd_backup/full/
+mkdir -p /etcd_backup/diff/
+
 cat>>/etc/profile<<EOF
 export SLACK_APP="https://hooks.slack.com/services/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"
 export HOST0=10.103.1.16
