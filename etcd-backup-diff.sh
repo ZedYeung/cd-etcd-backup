@@ -1,21 +1,9 @@
 #!/bin/bash
-HOST0=10.103.1.16
-HOST1=10.103.1.17
-HOST2=10.103.1.18
-PORT=2379
-ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
-SLACK_APP="https://hooks.slack.com/services/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"
-
 NOW=$(date +'%Y%m%d-%H%M%S')
-FULL_BACKUP_DIR=/etcd_backup/full/
-DIFF_BACKUP_DIR=/etcd_backup/diff/
-DIFF_BACKUP_OBJECT_STORAGE_BUCKET=s3://diff-backup
 LATEST_FULL_BACKUP=($( ls -tp ${FULL_BACKUP_DIR} | head -n 1))
 UPDATED_FULL_BACKUP=${NOW}.json
 DIFF_BACKUP=${NOW}.patch
-BACKUP_ENDPOINT=/
 RETAIN=3
-PUBLIC_KEY_PEM=public_key.pem
 
 # if there is no full backup, diff backup would not work
 if [ -z "$(ls -A ${FULL_BACKUP_DIR})" ]; then

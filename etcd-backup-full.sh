@@ -1,18 +1,7 @@
 #!/bin/bash
-HOST0=10.103.1.16
-HOST1=10.103.1.17
-HOST2=10.103.1.18
-PORT=2379
-ENDPOINTS="http://${HOST0}:${PORT},http://${HOST1}:${PORT},http://${HOST2}:${PORT}"
-SLACK_APP="https://hooks.slack.com/services/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"
-
 NOW=$(date +'%Y%m%d-%H%M%S')
-FULL_BACKUP_DIR=/etcd_backup/full/
-FULL_BACKUP_OBJECT_STORAGE_BUCKET=s3://full-backup
 FULL_BACKUP=${NOW}.json
-BACKUP_ENDPOINT=/
 RETAIN=1
-PUBLIC_KEY_PEM=public_key.pem
 
 # https://gist.github.com/crazybyte/4142975
 echo "BACKUP ${FULL_BACKUP}"
