@@ -17,6 +17,12 @@ BACKUP_ENDPOINT=/
 RETAIN=3
 PUBLIC_KEY_PEM=public_key.pem
 
+# if there is no full backup, diff backup would not work
+if [ -z "$(ls -A ${FULL_BACKUP_DIR})" ]; then
+  echo "No full backup is detected"
+  exit
+fi
+
 echo "BACKUP ${DIFF_BACKUP}"
 curl -X POST -H 'Content-type: application/json' --data '{"text": "Backup '"${DIFF_BACKUP}"' "}' ${SLACK_APP}
 etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${UPDATED_FULL_BACKUP}
