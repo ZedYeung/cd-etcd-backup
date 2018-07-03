@@ -25,3 +25,6 @@ rm -r /etcd_backup/diff/
 rm etcd-backup-full.log
 rm etcd-backup-diff.log
 rm etcd-unhealth-alert.log
+
+sed '/^export/ d' /etc/profile
+source /etc/profile
