@@ -1,5 +1,5 @@
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/local/go/bin:/root/go/bin:/usr/local/go/bin
-source /etc/profile
+source ~/.bashrc
 
 */3 * * * * cd ~/cd-etcd-backup && ./etcd-backup-full.sh > etcd-backup-full.log 2>&1
 
