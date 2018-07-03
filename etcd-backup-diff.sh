@@ -6,6 +6,7 @@ LATEST_FULL_BACKUP=($( ls -tp ${FULL_BACKUP_DIR} | head -n 1))
 PATCH_FULL_BACKUP=${NOW}.json
 DIFF_BACKUP=${NOW}.patch
 RETAIN=3
+OBJECT_STORAGE_RETAIN=10
 
 # if there is no full backup, diff backup would not work
 if [ -z "$(ls -A ${FULL_BACKUP_DIR})" ]; then
@@ -22,6 +23,16 @@ rm ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}
 s3cmd put ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}.enc ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/${DIFF_BACKUP}.enc
 rm ${PATCH_FULL_BACKUP}
 
+OBJECT_STORAGE_NUM=$(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | wc -l)
+
+if [ "${OBJECT_STORAGE_NUM}" -gt "${OBJECT_STORAGE_RETAIN}" ]; then
+  echo "Remove outdated backup from object storage"
+  for S3_BACKUP in $(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | head -n $[${OBJECT_STORAGE_NUM} - ${OBJECT_STORAGE_RETAIN}] | awk {'print $4'} );
+    do
+      s3cmd rm ${S3_BACKUP}
+    done
+fi
+
 # REMOVE OUTDATED BACKUP
 # ls -l | wc -l
 # would have this extra line even in empty folder
@@ -29,7 +40,7 @@ rm ${PATCH_FULL_BACKUP}
 DIFF_BACKUP_NUM=$[$(ls -l ${DIFF_BACKUP_DIR} | wc -l) - 1]
 
 if [ "${DIFF_BACKUP_NUM}" -gt "${RETAIN}" ]; then
-  echo "Remove outdated backup"
+  echo "Remove outdated backup from local"
   for BACKUP in $(ls -tp ${DIFF_BACKUP_DIR} | tail -n $[${DIFF_BACKUP_NUM} - ${RETAIN}]);
   do
     rm ${DIFF_BACKUP_DIR}/${BACKUP}
