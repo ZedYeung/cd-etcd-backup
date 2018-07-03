@@ -23,8 +23,8 @@ openssl smime -decrypt -binary -in ${LATEST_FULL_ENC_BACKUP} -inform DER -out ${
 openssl smime -decrypt -binary -in ${LATEST_DIFF_ENC_BACKUP} -inform DER -out ${LATEST_DIFF_BACKUP} -inkey ${PRIVATE_KEY_PEM}
 
 echo "Recovering..."
-FULL_BACKUP_TIMESTAMP=$(date -d $(basename ${LATEST_FULL_BACKUP} .json) +"%Y%m%d-%H%M%S")
-DIFF_BACKUP_TIMESTAMP=$(date -d $(basename ${LATEST_DIFF_BACKUP} .patch) +"%Y%m%d-%H%M%S")
+FULL_BACKUP_TIMESTAMP=$(date -d @$(basename ${LATEST_FULL_BACKUP} .json) +"%Y%m%d-%H%M%S")
+DIFF_BACKUP_TIMESTAMP=$(date -d @$(basename ${LATEST_DIFF_BACKUP} .patch) +"%Y%m%d-%H%M%S")
 PATCH_FULL_BACKUP=patch_full_backup.json
 # make sure diff-backup is newer than full-backup otherwise patch is meaningless
 if [ ${DIFF_BACKUP_TIMESTAMP} -ge ${FULL_BACKUP_TIMESTAMP} ]; then
