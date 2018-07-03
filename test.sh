@@ -8,8 +8,8 @@ sleep 10
 # used in generate_random_data.sh
 export GENERATE_INTERVAL=10
 
-TEST_FULL_NUM=2
-TEST_NUM=2
+TEST_FULL_NUM=1
+TEST_NUM=1
 FULL_INTERVAL=180
 INTERVAL=60
 CUSHION_INTERVAL=10
@@ -20,7 +20,7 @@ echo "Generate ssl file..."
 openssl req -x509 -days 100000 -newkey rsa:4096 -keyout ${PRIVATE_KEY_PEM} -out ${PUBLIC_KEY_PEM}
 
 echo "Generate data..."
-./generate_random_data.sh &
+./generate_random_data.sh>generate_random_data.log &
 
 # CRON JOB TO BACKUP
 # https://stackoverflow.com/questions/878600/how-to-create-a-cron-job-using-bash-automatically-without-the-interactive-editor
