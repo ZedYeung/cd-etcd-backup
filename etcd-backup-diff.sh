@@ -1,4 +1,6 @@
 #!/bin/bash
+source ~/.bashrc
+
 NOW=$(date +'%Y%m%d-%H%M%S')
 LATEST_FULL_BACKUP=($( ls -tp ${FULL_BACKUP_DIR} | head -n 1))
 PATCH_FULL_BACKUP=${NOW}.json

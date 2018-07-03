@@ -26,5 +26,5 @@ rm etcd-backup-full.log
 rm etcd-backup-diff.log
 rm etcd-unhealth-alert.log
 
-sed -i '/^export/ d' /etc/profile
-source /etc/profile
+sed -i '/^export/ d' ~/.bashrc
+source ~/.bashrc

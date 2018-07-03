@@ -1,4 +1,6 @@
 #!/bin/bash
+source ~/.bashrc
+
 NOW=$(date +'%Y%m%d-%H%M%S')
 FULL_BACKUP=${NOW}.json
 RETAIN=1
