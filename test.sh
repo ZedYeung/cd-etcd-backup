@@ -3,6 +3,7 @@
 # https://gist.github.com/crazybyte/4142975
 echo "Setup environment variable"
 ./set_env_variable.sh
+sleep 10
 
 # used in generate_random_data.sh
 export GENERATE_INTERVAL=10
