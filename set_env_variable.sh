@@ -2,6 +2,8 @@
 mkdir -p /etcd_backup/full/
 mkdir -p /etcd_backup/diff/
 
+cp ./.s3cfg ~/.s3cfg
+
 cat>>/etc/profile<<EOF
 export SLACK_APP="https://hooks.slack.com/services/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"
 export HOST0=10.103.1.16
@@ -17,3 +19,5 @@ export PRIVATE_KEY_PEM=~/.ssh/backup_private_key.pem
 export PUBLIC_KEY_PEM=~/.ssh/backup_public_key.pem
 export BACKUP_ENDPOINT=/
 EOF
+
+source /etc/profile
