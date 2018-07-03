@@ -1,5 +1,5 @@
 #!/bin/bash
-source ~/.bashrc
+source /etc/profile
 
 NOW=$(date +'%Y%m%d-%H%M%S')
 FULL_BACKUP=${NOW}.json

@@ -20,4 +20,4 @@ export PUBLIC_KEY_PEM=~/.ssh/backup_public_key.pem
 export BACKUP_ENDPOINT=/
 EOF
 
-source ~/.bashrc
+source /etc/profile
