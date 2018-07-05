@@ -10,9 +10,9 @@ OBJECT_STORAGE_RETAIN=10
 echo "BACKUP ${FULL_BACKUP}"
 etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${FULL_BACKUP_DIR}/${FULL_BACKUP}
 openssl smime -encrypt -binary -aes-256-cbc -in ${FULL_BACKUP_DIR}/${FULL_BACKUP} -out ${FULL_BACKUP_DIR}/${FULL_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
-# remove original backup once encrypt
-rm ${FULL_BACKUP_DIR}/${FULL_BACKUP}
 s3cmd put ${FULL_BACKUP_DIR}/${FULL_BACKUP}.enc ${FULL_BACKUP_OBJECT_STORAGE_BUCKET}/${FULL_BACKUP}.enc
+# remove once upload
+rm ${FULL_BACKUP_DIR}/${FULL_BACKUP}.enc
 
 OBJECT_STORAGE_NUM=$(s3cmd ls ${FULL_BACKUP_OBJECT_STORAGE_BUCKET} | wc -l)
 

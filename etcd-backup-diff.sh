@@ -18,9 +18,9 @@ echo "BACKUP ${DIFF_BACKUP}"
 etcdtool --peers ${ENDPOINTS} export ${BACKUP_ENDPOINT} -f 'JSON' -o ${PATCH_FULL_BACKUP}
 diff ${FULL_BACKUP_DIR}/${LATEST_FULL_BACKUP} ${PATCH_FULL_BACKUP} > ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}
 openssl smime -encrypt -binary -aes-256-cbc -in ${DIFF_BACKUP_DIR}/${DIFF_BACKUP} -out ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}.enc -outform DER ${PUBLIC_KEY_PEM}
-# remove original backup once encrypt
-rm ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}
 s3cmd put ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}.enc ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET}/${DIFF_BACKUP}.enc
+# remove once upload
+rm ${DIFF_BACKUP_DIR}/${DIFF_BACKUP}.enc
 rm ${PATCH_FULL_BACKUP}
 
 OBJECT_STORAGE_NUM=$(s3cmd ls ${DIFF_BACKUP_OBJECT_STORAGE_BUCKET} | wc -l)
