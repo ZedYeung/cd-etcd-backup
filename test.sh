@@ -2,6 +2,11 @@
 # openssl encrypt large file
 # https://gist.github.com/crazybyte/4142975
 echo "Setup environment variable"
+RESTORE_HOST0=10.103.1.13
+RESTORE_HOST1=10.103.1.14
+RESTORE_HOST2=10.103.1.15
+PORT=2379
+RESTORE_ENDPOINTS="http://${RESTORE_HOST0}:${PORT},http://${RESTORE_HOST1}:${PORT},http://${RESTORE_HOST2}:${PORT}"
 ./set_env_variable.sh
 sleep 10
 

@@ -23,13 +23,15 @@ openssl smime -decrypt -binary -in ${LATEST_FULL_ENC_BACKUP} -inform DER -out ${
 openssl smime -decrypt -binary -in ${LATEST_DIFF_ENC_BACKUP} -inform DER -out ${LATEST_DIFF_BACKUP} -inkey ${PRIVATE_KEY_PEM}
 
 echo "Recovering..."
-FULL_BACKUP_TIMESTAMP=$(date -d @$(basename ${LATEST_FULL_BACKUP} .json) +"%Y%m%d-%H%M%S")
-DIFF_BACKUP_TIMESTAMP=$(date -d @$(basename ${LATEST_DIFF_BACKUP} .patch) +"%Y%m%d-%H%M%S")
+FULL_BACKUP_TIMESTAMP=$(basename ${LATEST_FULL_BACKUP} .json)
+DIFF_BACKUP_TIMESTAMP=$(basename ${LATEST_DIFF_BACKUP} .patch)
 PATCH_FULL_BACKUP=patch_full_backup.json
 # make sure diff-backup is newer than full-backup otherwise patch is meaningless
-if [ ${DIFF_BACKUP_TIMESTAMP} -ge ${FULL_BACKUP_TIMESTAMP} ]; then
+if [ ${DIFF_BACKUP_TIMESTAMP} \> ${FULL_BACKUP_TIMESTAMP} ]; then
+  echo "patch $PATCH_FULL_BACKUP"
   patch ${LATEST_FULL_BACKUP} -i ${LATEST_DIFF_BACKUP} -o ${PATCH_FULL_BACKUP}
   etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${PATCH_FULL_BACKUP}
 else
+  echo "import ${LATEST_FULL_BACKUP}"
   etcdtool --peers ${RESTORE_ENDPOINTS} import -y ${BACKUP_ENDPOINT} ${LATEST_FULL_BACKUP}
 fi
