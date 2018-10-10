@@ -42,7 +42,7 @@ Restore full backup and diff backup and check the consistency respectively.
 Assert etcd get key equal value and the total number of key value pair.
 
 ### How to test
-1. Launch a new VM in CA3, clone this repo.
+1. Launch a new VM, clone this repo.
 2. Install required dependencies with install-dependencies.sh
 3. Setup environment with set_env_variable.sh(probably need to reboot if source not work)
 4. Run test.sh
